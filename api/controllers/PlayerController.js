@@ -1,7 +1,7 @@
 const router        = require('express').Router(),
     db              = require('../../db'),
     PlayerSchema    = require('../models/Player'),
-    Characters      = require('../constants/Characters');
+    c               = require('../constants/Characters');
     bodyParser      = require('body-parser');
 
 
@@ -19,11 +19,11 @@ router.get('/', (req, res) => {
         .then((err, p) => {
         if (err) {
             console.log(err);
-            return;
         } else {
             console.log(p);
+            res.status(200);
+            res.send(p);
         }
-        res.status(200).send(p);
     });
 
 });
@@ -50,7 +50,7 @@ router.post('/', (req, res) => {
         qMain = req.query.main.toLowerCase();
 
     // Send 400 if parameters are empty or main is not a valid Character
-    if (!qName || !qTag || !qMain || !Characters[qMain]) {
+    if (!qName || !qTag || !c.CHARACTERS[qMain]) {
         return res.status(400).send('Bad Request');
     }
 
@@ -63,6 +63,7 @@ router.post('/', (req, res) => {
                     }
                     if (p.length) {
                         console.log(p);
+                        throw 'Player exists error'
                     }
                     resolve();
                 }
