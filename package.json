@@ -2,9 +2,11 @@
   "name": "ryerson-smash-api",
   "version": "1.0.0",
   "description": "",
-  "main": "server.js",
+  "main": "./dist/server.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "./node_modules/.bin/babel  ./src --experimental --source-maps-inline -d ./dist",
+    "start": "./node_modules/.bin/babel  ./src --experimental --source-maps-inline -d ./dist && nodemon ./dist/server.js"
   },
   "author": "darwin",
   "license": "ISC",
@@ -13,5 +15,9 @@
     "express": "^4.15.4",
     "mongoose": "^4.11.8",
     "mongoose-auto-increment": "^5.0.1"
+  },
+  "devDependencies": {
+    "babel-cli": "^6.26.0",
+    "babel-preset-env": "^1.6.0"
   }
 }

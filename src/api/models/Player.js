@@ -1,7 +1,8 @@
-const mongoose  = require('mongoose'),
-    autoIncrement   = require('mongoose-auto-increment'),
-    db              = require('../../db');
-    Schema          = mongoose.Schema;
+import mongoose  from 'mongoose'
+import autoIncrement from 'mongoose-auto-increment'
+import db from '../../db';
+
+const Schema = mongoose.Schema;
 
 autoIncrement.initialize(db);
 

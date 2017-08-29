@@ -1,6 +1,6 @@
 // Export all models from this file to keep server.js clean
 
-const PlayerModel = require('./Player');
+import PlayerModel from './Player';
 
 module.exports =  {
     PlayerModel

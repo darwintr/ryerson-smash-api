@@ -1,10 +1,10 @@
-const router        = require('express').Router(),
-    db              = require('../../db'),
-    PlayerSchema    = require('../models/Player'),
-    c               = require('../constants/Characters');
-    bodyParser      = require('body-parser');
+import express from 'express';
+import db from '../../db';
+import PlayerSchema from '../models/Player';
+import * as c from '../constants/Characters';
+import bodyParser from 'body-parser';
 
-
+let router = express.Router();
 router.use(bodyParser.urlencoded( { extended: true } ));
 let Player = db.model('Player', PlayerSchema);
 

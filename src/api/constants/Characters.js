@@ -1,4 +1,4 @@
-exports.CHARACTERS = {
+export const CHARACTERS = {
     drmario: 'Dr.Mario', mario: 'Mario', luigi: 'Luigi', bowser: 'Bowser', peach: 'Peach',
     yoshi: 'Yoshi', dk: 'Donkey Kong', captainfalcon: 'Captain Falcon', ganondorf: 'Ganondorf',
     falco: 'Falco', fox: 'Fox', ness: 'Ness', iceclimbers: 'Ice Climbers', kirby: 'Kirby',
