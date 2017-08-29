@@ -1,6 +1,7 @@
 const router        = require('express').Router(),
     db              = require('../../db'),
     PlayerSchema    = require('../models/Player'),
+    Characters      = require('../constants/Characters');
     bodyParser      = require('body-parser');
 
 
@@ -46,12 +47,14 @@ router.post('/', (req, res) => {
     console.log(req.query);
     let qName = req.query.name,
         qTag = req.query.tag,
-        qMain = req.query.main;
+        qMain = req.query.main.toLowerCase();
 
-    if (!qName || !qTag || !qMain) {
-        res.status(400).send('Bad Request');
+    // Send 400 if parameters are empty or main is not a valid Character
+    if (!qName || !qTag || !qMain || !Characters[qMain]) {
+        return res.status(400).send('Bad Request');
     }
 
+    // Check if player already exists, if it doesn't then add the player
     Player.find({ name: qName, tag: qTag })
         .then((p, e) => {
             return new Promise((resolve) => {
@@ -85,7 +88,7 @@ router.post('/', (req, res) => {
             console.log(e);
             switch(e) {
                 case 'Database error':
-                    res.status(500).send('Database error');
+                    res.status(500).send(e);
                     break;
                 case 'Player exists error':
                     res.status(400).send('Bad Request: Player already exists');
