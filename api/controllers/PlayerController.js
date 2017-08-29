@@ -8,29 +8,54 @@ const router        = require('express').Router(),
 router.use(bodyParser.urlencoded( { extended: true } ));
 let Player = db.model('Player', PlayerSchema);
 
+// TODO: Move exceptions to a separate file/implementation
+
+const handleErr = (e) => {
+    switch (e) {
+        case 'Database error':
+            res.status(500).send(e);
+            break;
+        case 'Player exists error':
+            res.status(400).send('Bad Request: Player already exists');
+            break;
+    }
+}
+
 router.get('/', (req, res) => {
 
-    // GET ALL PLAYERS
-    // PARAMS: none
+    // GET PLAYER by TAG/NAME, GET ALL IF NO PARAMS
+    // PARAMS: tag and/or name
 
-    // TODO: send status codes
-
-    Player.find()
-        .then((err, p) => {
-        if (err) {
-            console.log(err);
+    const handleGet = (p, e) => {
+        if (e) {
+            throw 'Database Error';
         } else {
             console.log(p);
             res.status(200);
-            res.send(p);
+            return res.send(p);
         }
-    });
+    }
+
+    // Find all if no tag and name are inputted
+    // Otherwise find document with tag and name
+    if (!req.query.tag && !req.query.name) {
+        Player.find()
+            .then((p, e) => handleGet(p, e))
+            .catch((e) => handleErr(e));
+    } else {
+        Player.find({ name: req.query.name, tag: req.query.tag })
+            .then((p, e) => handleGet(p, e))
+            .catch((e) => handleErr(e));
+    }
+
 
 });
 
 router.put('/', (req, res) => {
     // UPDATE A PLAYER
     // PARAMS: tag and/or name
+
+    // TODO: update route
 
     console.log(req.query);
     let qName = req.query.name,
@@ -85,22 +110,14 @@ router.post('/', (req, res) => {
                     }
                 });
         })
-        .catch((e) => {
-            console.log(e);
-            switch(e) {
-                case 'Database error':
-                    res.status(500).send(e);
-                    break;
-                case 'Player exists error':
-                    res.status(400).send('Bad Request: Player already exists');
-                    break;
-            }
-        });
+        .catch((e) => handleErr(e));
 });
 
 router.delete('/', (req, res) => {
     // DELETE A PLAYER
     // PARAMS: tag and/or name ; id else: res: 400 / res.message = "more than one player with that tag, get id"
+
+    // TODO: delete route
 });
 
 module.exports = router;
