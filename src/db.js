@@ -7,4 +7,6 @@ const db = mongoose.connect(AUTH.DBURL, { useMongoClient: true } );
 
 autoIncrement.initialize(db);
 
+db.autoIncrement = autoIncrement;
 module.exports = db;
+

@@ -19,7 +19,7 @@ const handleErr = (e) => {
             res.status(400).send('Bad Request: Player already exists');
             break;
     }
-}
+};
 
 router.get('/', (req, res) => {
 

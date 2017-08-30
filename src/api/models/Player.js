@@ -1,7 +1,5 @@
 import mongoose  from 'mongoose'
-import autoIncrement from 'mongoose-auto-increment'
 import db from '../../db';
-
 const Schema = mongoose.Schema;
 
 
@@ -13,6 +11,6 @@ const playerSchema = new Schema({
     main: String
 });
 
-playerSchema.plugin(autoIncrement.plugin, 'PlayerID');
+playerSchema.plugin(db.autoIncrement.plugin, 'PlayerID');
 
 module.exports = playerSchema;
