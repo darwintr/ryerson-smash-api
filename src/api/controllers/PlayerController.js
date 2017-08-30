@@ -1,7 +1,6 @@
 import express from 'express';
 import db from '../../db';
 import Models from '../models/modelIndex';
-import * as c from '../constants/Characters';
 import bodyParser from 'body-parser';
 
 let router = express.Router();
@@ -17,7 +16,7 @@ const handleErr = (e, res) => {
             res.status(400).send('Bad Request: Player already exists');
             break;
         default:
-            res.status(500).send(e);
+            res.status(500).send(e.message ? e.message : e);
     }
 };
 
@@ -74,11 +73,6 @@ router.post('/', (req, res) => {
         qTag = req.body.tag,
         qMain = req.body.main.toLowerCase();
 
-    // Send 400 if parameters are empty or main is not a valid Character
-    if (!qName || !qTag || !c.CHARACTERS[qMain]) {
-        return res.status(400).send('Bad Request');
-    }
-
     // Check if player already exists, if it doesn't then add the player
     Player.find({ name: qName, tag: qTag })
         .then((p, e) => {
@@ -108,7 +102,8 @@ router.post('/', (req, res) => {
                         res.status(200).send('Successfully added Player');
                         console.log(p);
                     }
-                });
+                })
+                .catch((e) => handleErr(e, res));;
         })
         .catch((e) => handleErr(e, res));
 });
