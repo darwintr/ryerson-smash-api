@@ -4,7 +4,7 @@ import db from '../../db';
 
 const Schema = mongoose.Schema;
 
-autoIncrement.initialize(db);
+
 
 const playerSchema = new Schema({
     _id: { type: Schema.Types.ObjectId, ref: 'PlayerID' },
