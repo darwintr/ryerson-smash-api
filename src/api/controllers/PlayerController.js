@@ -38,12 +38,12 @@ router.get('/', (req, res) => {
 
     // Find all if no tag and name are inputted
     // Otherwise find document with tag and name
-    if (!req.body.tag && !req.body.name) {
+    if (!req.query.tag && !req.query.name) {
         Player.find()
             .then((p, e) => handleGet(p, e))
             .catch((e) => handleErr(e, res));
     } else {
-        Player.find({ name: req.body.name, tag: req.body.tag })
+        Player.find({ name: req.query.name, tag: req.query.tag })
             .then((p, e) => handleGet(p, e))
             .catch((e) => handleErr(e, res));
     }
