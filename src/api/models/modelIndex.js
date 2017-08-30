@@ -3,7 +3,7 @@
 import PlayerModel from './Player';
 import MatchModel from './Match'
 
-module.exports =  {
+export default {
     PlayerModel,
     MatchModel
 };

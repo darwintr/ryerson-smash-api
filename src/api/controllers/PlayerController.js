@@ -1,24 +1,23 @@
 import express from 'express';
 import db from '../../db';
-import PlayerSchema from '../models/Player';
+import Models from '../models/modelIndex';
 import * as c from '../constants/Characters';
 import bodyParser from 'body-parser';
 
 let router = express.Router();
 router.use(bodyParser.urlencoded( { extended: true } ));
-router.use(bodyParser.json)();
-let Player = db.model('Player', PlayerSchema);
+router.use(bodyParser.json());
+let Player = db.model('Player', Models.PlayerModel);
 
 // TODO: Move exceptions to a separate file/implementation
 
-const handleErr = (e) => {
+const handleErr = (e, res) => {
     switch (e) {
-        case 'Database error':
-            res.status(500).send(e);
-            break;
         case 'Player exists error':
             res.status(400).send('Bad Request: Player already exists');
             break;
+        default:
+            res.status(500).send(e);
     }
 };
 
@@ -42,11 +41,11 @@ router.get('/', (req, res) => {
     if (!req.body.tag && !req.body.name) {
         Player.find()
             .then((p, e) => handleGet(p, e))
-            .catch((e) => handleErr(e));
+            .catch((e) => handleErr(e, res));
     } else {
         Player.find({ name: req.body.name, tag: req.body.tag })
             .then((p, e) => handleGet(p, e))
-            .catch((e) => handleErr(e));
+            .catch((e) => handleErr(e, res));
     }
 
 
@@ -111,7 +110,7 @@ router.post('/', (req, res) => {
                     }
                 });
         })
-        .catch((e) => handleErr(e));
+        .catch((e) => handleErr(e, res));
 });
 
 router.delete('/', (req, res) => {
