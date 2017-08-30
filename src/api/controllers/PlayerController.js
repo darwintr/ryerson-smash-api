@@ -38,12 +38,12 @@ router.get('/', (req, res) => {
 
     // Find all if no tag and name are inputted
     // Otherwise find document with tag and name
-    if (!req.body.tag && !req.body.name) {
+    if (!req.query.tag && !req.query.name) {
         Player.find()
             .then((p, e) => handleGet(p, e))
             .catch((e) => handleErr(e, res));
     } else {
-        Player.find({ name: req.body.name, tag: req.body.tag })
+        Player.find({ name: req.query.name, tag: req.query.tag })
             .then((p, e) => handleGet(p, e))
             .catch((e) => handleErr(e, res));
     }
@@ -57,10 +57,10 @@ router.put('/', (req, res) => {
 
     // TODO: update route
 
-    console.log(req.body);
-    let qName = req.body.name,
-        qTag = req.body.tag,
-        qMain = req.body.main;
+    console.log(req.query);
+    let qName = req.query.name,
+        qTag = req.query.tag,
+        qMain = req.query.main;
 
 
 });
@@ -69,10 +69,10 @@ router.post('/', (req, res) => {
     // ADD A PLAYER
     // PARAMS: tag and/or name
 
-    console.log(req.body);
-    let qName = req.body.name,
-        qTag = req.body.tag,
-        qMain = req.body.main.toLowerCase();
+    console.log(req.query);
+    let qName = req.query.name,
+        qTag = req.query.tag,
+        qMain = req.query.main.toLowerCase();
 
     // Send 400 if parameters are empty or main is not a valid Character
     if (!qName || !qTag || !c.CHARACTERS[qMain]) {
