@@ -6,7 +6,6 @@ PORT        = process.env.PORT || 3000;
 
 app.use(bodyParser.urlencoded( { extended: true } ));
 app.use(bodyParser.json());
-app.router.use(router.use(bodyParser.urlencoded( { extended: true } )));
 // ROUTES
 app.use('/player', Controllers.PlayerController);
 

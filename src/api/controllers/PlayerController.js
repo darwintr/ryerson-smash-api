@@ -34,7 +34,7 @@ router.get('/', (req, res) => {
             res.status(200);
             return res.send(p);
         }
-    }
+    };
 
     // Find all if no tag and name are inputted
     // Otherwise find document with tag and name
