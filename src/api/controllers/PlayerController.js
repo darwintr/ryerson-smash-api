@@ -5,7 +5,7 @@ import * as c from '../constants/Characters';
 import bodyParser from 'body-parser';
 
 let router = express.Router();
-//router.use(bodyParser.urlencoded( { extended: true } ));
+router.use(bodyParser.urlencoded( { extended: true } ));
 let Player = db.model('Player', PlayerSchema);
 
 // TODO: Move exceptions to a separate file/implementation
