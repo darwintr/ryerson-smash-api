@@ -7,5 +7,4 @@ import bodyParser from 'body-parser';
 
 let router = express.Router();
 //router.use(bodyParser.urlencoded( { extended: true } ));
-router.use(bodyParser.json);
 let Match = db.model('Match', MatchSchema);
