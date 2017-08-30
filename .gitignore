@@ -107,3 +107,4 @@ typings/
 # dotenv environment variables file
 .env
 ryerson-smash-api.iml
+src/auth.js
