@@ -16,9 +16,12 @@ const playerSchema = new Schema({
             validator: validateMain,
             msg: 'Invalid character name'
         },
-        required: true
+        required: true,
+        lowercase: true
     }
 });
+
+playerSchema.index({name: 1, tag: 1}, { unique: true });
 
 
 playerSchema.plugin(db.autoIncrement.plugin, 'PlayerID');
