@@ -8,20 +8,29 @@ import bodyParser from 'body-parser';
 let router = express.Router();
 router.use(bodyParser.urlencoded( { extended: true } ));
 router.use(bodyParser.json());
+
+let Player = db.model('Player', Models.PlayerModel);
 let Match = db.model('Match', Models.MatchModel);
 
 router.get('/', (req, res) => {
+    let queries = {};
+    if(req.query.id){
+        queries._id = parseInt(req.query.id);
+    }
 
-    Match.find()
+    Match.find(queries)
         .then((p, e) => {
             if(e){
                 throw 'Database error';
             } else{
-                res.status(200).send(p)
+                if(p.length)
+                    return res.status(200).send(p);
+                else
+                    return res.status(404).send("MatchID not found.");
             }
         })
         .catch((e) => {
-            res.status(500).send(e);
+            return res.status(500).send(e);
         });
 });
 
@@ -31,30 +40,54 @@ router.post('/', (req, res) => {
         return res.status(400).send('Bad Request');
     }
 
-    let newMatch =  new Match({
-        players: req.body.players,
-        winners: req.body.winners,
-        stage: req.body.stage
-    });
+    let pids = [];
+    for( var player in req.body.players){
+        console.log(req.body.players[player]);
+        pids.push(req.body.players[player]._playerID);
+    }
 
-
-
-    newMatch.save()
+    Player.find({_id: {$in: pids}})
         .then((p, e) => {
-            if (e) {
-                throw 'Database error';
-            } else {
-                res.status(200).send('Successfully added Match');
-                //console.log(p);
-            }
-        }, function(err){
-            //console.log(err);
-            res.status(400).send(err.message.replace(', ', "\n"));
+            return new Promise((resolve) => {
+                    console.log(p);
+                    if (e) {
+                        throw 'Database error';
+                    }
+                    if (p.length!==req.body.players.length) {
+                        console.log(p);
+                        throw 'Player does not exist error'
+                    }
+                    resolve();
+                }
+            )
+        }).then(()=> {
+            let newMatch =  new Match({
+                players: req.body.players,
+                stage: req.body.stage
+            });
+            newMatch.save()
+                    .then((p, e) => {
+                        if (e) {
+                            throw 'error';
+                        } else {
+                            res.status(200).send('Successfully added Match');
+                        }
+                    }).catch((err) => {
+                        console.log(err);
+                        res.status(400).send(err.message.replace(', ', '\n'));
+                    });
+
+        }).catch((err) => {
+            console.log(err);
+            res.status(400).send(err);
         });
+
 });
 
 router.put('/', (req, res) => {
-
+    if(!req.body.players && !req.body.stage){
+        return res.status(400).send('Bad Request');
+    }
 });
 
 router.delete('/', (req, res) => {
