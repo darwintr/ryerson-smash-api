@@ -1,6 +1,6 @@
 import express from 'express';
 import db from '../../db';
-import Models from '../models/modelIndex';
+import Models from '../models/ModelIndex';
 import bodyParser from 'body-parser';
 
 let router = express.Router();
@@ -36,20 +36,20 @@ const playerQueryBuilder = (tag, name) => {
     return query
 };
 
+const handleGet = (p, e) => {
+    if (e) {
+        throw 'Database Error';
+    } else {
+        console.log(p);
+        res.status(200);
+        return res.send(p);
+    }
+};
+
 router.get('/', (req, res) => {
 
     // GET PLAYER by TAG/NAME, GET ALL IF NO PARAMS
     // PARAMS: tag and/or name
-
-    const handleGet = (p, e) => {
-        if (e) {
-            throw 'Database Error';
-        } else {
-            console.log(p);
-            res.status(200);
-            return res.send(p);
-        }
-    };
 
     Player.find(playerQueryBuilder(req.query.tag, req.query.name))
         .then((p, e) => handleGet(p, e))
@@ -58,7 +58,19 @@ router.get('/', (req, res) => {
 
 });
 
+router.get('/:id', (req, res) => {
+
+    // GET PLAYER by ID
+
+    if (Number.isInteger(req.params.id)) {
+        Player.findById(req.params.id)
+            .then((p, e) => handleGet(p, e))
+            .catch((e) => handleErr(e, res));
+    }
+});
+
 router.put('/', (req, res) => {
+
     // UPDATE A PLAYER
     // PARAMS: tag and name
 
@@ -145,4 +157,4 @@ router.delete('/', (req, res) => {
 
 });
 
-module.exports = router;
+export default router;

@@ -26,4 +26,4 @@ playerSchema.index({name: 1, tag: 1}, { unique: true });
 
 playerSchema.plugin(db.autoIncrement.plugin, 'PlayerID');
 
-module.exports = playerSchema;
+export default playerSchema;
