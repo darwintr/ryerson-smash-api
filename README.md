@@ -1,15 +1,28 @@
 # ryerson-smash-api
 An API to track players and matchups for the Ryerson Smash Bros. Community
 
-To run:
-```
-npm install
-```
+## Documentation
+
+* [Player](#player)
+* [Match](#match)
+* [Stats](stats)
+
+
+### Player
+
+#### Format
 
 ```
-npm run build
+{
+  _id: Number,
+  name: String,
+  tag: String,
+  main: String 
+}
 ```
 
-```
-npm start
-```
+#### Methods
+
+### Match
+
+### Stats
