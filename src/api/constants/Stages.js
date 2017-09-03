@@ -1,4 +1,4 @@
 export const STAGES = {
-					battlefield: 'Battlefield', dreamland: 'Dream Land 64' , fd: 'Final Destination',
-					yoshistory: 'Yoshi\'s Story', pokemonstadium: 'Pokemon Stadium', other: 'Other'
+					bf: 'Battlefield', dl: 'Dream Land 64' , fd: 'Final Destination',
+					ys: 'Yoshi\'s Story', ps: 'Pokemon Stadium', other: 'Other'
 }
