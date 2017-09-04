@@ -53,6 +53,7 @@ An API to track players and matchups for the Ryerson Smash Bros. Community
  
 ### Match
 
+#### Format
 ```
 {
   _id: Number,
