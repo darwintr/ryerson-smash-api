@@ -50,6 +50,8 @@ An API to track players and matchups for the Ryerson Smash Bros. Community
 ```
 
 #### Methods
+ 
+### Match
 
 ```
 {
@@ -65,12 +67,9 @@ An API to track players and matchups for the Ryerson Smash Bros. Community
           _playerID: Number,
           character: String,
           winner: Boolean
-      }
+      },
       ...
   ]
 }
 ```
- 
-### Match
-
 ### Stats
