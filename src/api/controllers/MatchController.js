@@ -35,15 +35,19 @@ router.get('/', (req, res) => {
 });
 
 router.post('/', (req, res) => {
+
     console.log(req.body);
     if(!req.body.players || !req.body.stage){
         return res.status(400).send('Bad Request');
     }
 
     let pids = [];
-    for( var player in req.body.players){
-        console.log(req.body.players[player]);
-        pids.push(req.body.players[player]._playerID);
+    for( let player in req.body.players){
+        if (req.body.players.hasOwnProperty(player)) {
+            console.log(req.body.players[player]);
+            pids.push(req.body.players[player]._playerID);
+        }
+
     }
 
     Player.find({_id: {$in: pids}})

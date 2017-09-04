@@ -36,7 +36,7 @@ const playerQueryBuilder = (tag, name) => {
     return query
 };
 
-const handleGet = (p, e) => {
+const handleGet = (p, e, res) => {
     if (e) {
         throw 'Database Error';
     } else {
@@ -52,7 +52,7 @@ router.get('/', (req, res) => {
     // PARAMS: tag and/or name
 
     Player.find(playerQueryBuilder(req.query.tag, req.query.name))
-        .then((p, e) => handleGet(p, e))
+        .then((p, e) => handleGet(p, e, res))
         .catch((e) => handleErr(e, res));
 
 
@@ -64,14 +64,14 @@ router.get('/:id', (req, res) => {
 
     if (Number.isInteger(req.params.id)) {
         Player.findById(req.params.id)
-            .then((p, e) => handleGet(p, e))
+            .then((p, e) => handleGet(p, e, res))
             .catch((e) => handleErr(e, res));
     }
 });
 
 router.put('/', (req, res) => {
 
-    // UPDATE A PLAYER
+    // UPDATE A PLAYER INFO (name, tag, main)
     // PARAMS: tag and name
 
     // handler for request; called after query

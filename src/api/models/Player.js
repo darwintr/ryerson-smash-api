@@ -8,7 +8,7 @@ function validateMain(c) {
     return Object.keys(CHARACTERS).includes(c);
 }
 
-let stageObj = { wins: { type: Number, default: 0 } , loses: { type: Number, default: 0 } };
+let stageObj = { wins: { type: Number, default: 0 } , losses: { type: Number, default: 0 } };
 
 const playerSchema = new Schema({
     _id: { type: Schema.Types.ObjectId, ref: 'PlayerID' },
