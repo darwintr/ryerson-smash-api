@@ -87,36 +87,34 @@ router.post('/', (req, res) => {
                         res.status(400).send(err.message.replace(', ', '\n'));
                     });
 
+            // Update player wins/losses accordingly
+
+            Player.updateMany({_id: {$in: winners} },
+                {$inc: {wins: 1, [`stages.${req.body.stage}.wins`]: 1}})
+                .then((p, e) => {
+                    if (e) {
+                        throw 'Database error'
+                    } else {
+                        console.log('Successfully updated wins')
+                    }
+                 });
+
+            Player.updateMany({_id: {$in: losers} },
+                {$inc: {losses: 1, [`stages.${req.body.stage}.losses`]: 1}})
+                .then((p, e) => {
+                    if (e) {
+                        throw 'Database error'
+                    } else {
+                        console.log('Successfully updated losses')
+                    }
+                });
+
         }).catch((err) => {
             console.log(err);
             res.status(400).send(err);
         });
 
-    Player.updateMany({_id: {$in: winners} },
-            {$inc: {wins: 1, [`stages.${req.body.stage}.wins`]: 1}})
-        .then((p, e) => {
-            if (e) {
-                throw 'Database error: while updating winners'
-            } else {
-                console.log('Successfully updated wins')
-            }
-        }).catch((e) => {
-            console.log(e);
-            res.status(400).send(e);
-        });
 
-    Player.updateMany({_id: {$in: losers} },
-            {$inc: {losses: 1, [`stages.${req.body.stage}.losses`]: 1}})
-        .then((p, e) => {
-            if (e) {
-                throw 'Database error: while updating losers'
-            } else {
-                console.log('Successfully updated losses')
-            }
-        }).catch((e) => {
-        console.log(e);
-        res.status(400).send(e);
-    });
 });
 
 router.put('/', (req, res) => {
