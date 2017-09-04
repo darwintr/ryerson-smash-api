@@ -19,30 +19,30 @@ An API to track players and matchups for the Ryerson Smash Bros. Community
   tag: String,
   main: String,
   stages: {
-        bf: {
-        wins: Number,
-        losses: Number,
-        },
-        dl: {
-        wins: Number,
-        losses: Number,
-        },
-        ps: {
-        wins: Number,
-        losses: Number,
-        },
-        fd: {
-        wins: Number,
-        losses: Number,
-        },
-        ys: {
-        wins: Number,
-        losses: Number,
-        },
-        other: {
-        wins: Number,
-        losses: Number,
-        }
+            bf: {
+               wins: Number,
+               losses: Number,
+            },
+            dl: {
+               wins: Number,
+               losses: Number,
+           },
+            ps: {
+               wins: Number,
+               losses: Number,
+            },
+            fd: {
+               wins: Number,
+               losses: Number,
+            },
+           ys: {
+               wins: Number,
+               losses: Number,
+            },
+            other: {
+               wins: Number,
+               losses: Number,
+            }
     },
     wins: Number,
     losses: Number,
