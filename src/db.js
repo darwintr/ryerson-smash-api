@@ -1,6 +1,6 @@
-import AUTH from './auth';
-import mongoose from 'mongoose';
-import autoIncrement from 'mongoose-auto-increment';
+let AUTH = require('./auth');
+let mongoose = require('mongoose');
+let autoIncrement = require('mongoose-auto-increment');
 
 mongoose.Promise = global.Promise;
 const db = mongoose.connect(AUTH.DBURL, { useMongoClient: true } );
@@ -8,5 +8,5 @@ const db = mongoose.connect(AUTH.DBURL, { useMongoClient: true } );
 autoIncrement.initialize(db);
 
 db.autoIncrement = autoIncrement;
-export default db;
+module.exports = db;
 

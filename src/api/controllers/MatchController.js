@@ -1,13 +1,9 @@
-import express from 'express';
-import db from '../../db';
-import Models from '../models/ModelIndex';
-import * as charas from '../constants/Characters';
-import * as stages from '../constants/Stages'
-import bodyParser from 'body-parser';
+let express = require('express');
+let Models = require('../models/ModelIndex');
+let db = require('../../db');
+let bodyParser = require('body-parser');
 
 let router = express.Router();
-router.use(bodyParser.urlencoded( { extended: true } ));
-router.use(bodyParser.json());
 
 let Player = db.model('Player', Models.PlayerModel);
 let Match = db.model('Match', Models.MatchModel);
@@ -36,16 +32,26 @@ router.get('/', (req, res) => {
 
 router.post('/', (req, res) => {
 
+    console.log('POST /match : ')
     console.log(req.body);
+
     if(!req.body.players || !req.body.stage){
         return res.status(400).send('Bad Request');
     }
 
     let pids = [];
+    let winners = [];
+    let losers = [];
     for( let player in req.body.players){
         if (req.body.players.hasOwnProperty(player)) {
-            console.log(req.body.players[player]);
-            pids.push(req.body.players[player]._playerID);
+            let p = req.body.players[player]
+            console.log(p);
+            pids.push(p._playerID);
+            if (p.winner) {
+                winners.push(p._playerID);
+            } else {
+                losers.push(p._playerID)
+            }
         }
 
     }
@@ -86,6 +92,31 @@ router.post('/', (req, res) => {
             res.status(400).send(err);
         });
 
+    Player.updateMany({_id: {$in: winners} },
+            {$inc: {wins: 1, [`stages.${req.body.stage}.wins`]: 1}})
+        .then((p, e) => {
+            if (e) {
+                throw 'Database error: while updating winners'
+            } else {
+                console.log('Successfully updated wins')
+            }
+        }).catch((e) => {
+            console.log(e);
+            res.status(400).send(e);
+        });
+
+    Player.updateMany({_id: {$in: losers} },
+            {$inc: {losses: 1, [`stages.${req.body.stage}.losses`]: 1}})
+        .then((p, e) => {
+            if (e) {
+                throw 'Database error: while updating losers'
+            } else {
+                console.log('Successfully updated losses')
+            }
+        }).catch((e) => {
+        console.log(e);
+        res.status(400).send(e);
+    });
 });
 
 router.put('/', (req, res) => {

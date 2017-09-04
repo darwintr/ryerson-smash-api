@@ -1,7 +1,7 @@
-import mongoose  from 'mongoose'
-import db from '../../db';
-import CHARACTERS from '../constants/Characters';
-import STAGES from '../constants/Stages';
+let mongoose = require('mongoose');
+let db = require('../../db');
+let CHARACTERS = require('../constants/Characters');
+let STAGES = require('../constants/Stages');
 const Schema = mongoose.Schema;
 
 function validateMain(c) {
@@ -45,4 +45,4 @@ const playerSchema = new Schema({
 playerSchema.index({name: 1, tag: 1}, { unique: true });
 playerSchema.plugin(db.autoIncrement.plugin, 'PlayerID');
 
-export default playerSchema;
+module.exports = playerSchema;

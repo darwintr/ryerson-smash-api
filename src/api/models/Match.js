@@ -1,16 +1,16 @@
-import mongoose  from 'mongoose'
-import db from '../../db';
-import * as charas from './../constants/Characters';
-import * as stages from './../constants/Stages';
+let mongoose = require('mongoose');
+let db = require('../../db');
+let charas =  require('./../constants/Characters');
+let stages = require('./../constants/Stages');
 
 const Schema = mongoose.Schema;
 const stageArray = [];
-for(var stage in stages.STAGES){
+for(let stage in stages.STAGES){
     stageArray.push(stage);
 }
 const charaArray = [];
 
-for(var char in charas.CHARACTERS){
+for(let char in charas.CHARACTERS){
     charaArray.push(char);
 }
 

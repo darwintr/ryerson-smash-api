@@ -4,8 +4,9 @@ const app   = require('express')(),
     Controllers = require('./api/controllers/controllerIndex'),
     PORT        = process.env.PORT || 3000;
 
-app.use(bodyParser.urlencoded( { extended: true } ));
 app.use(bodyParser.json());
+app.use(bodyParser.urlencoded( { extended: true } ));
+
 // ROUTES
 app.use('/player', Controllers.PlayerController);
 app.use('/match', Controllers.MatchController);

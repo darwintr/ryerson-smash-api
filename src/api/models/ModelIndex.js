@@ -1,9 +1,9 @@
 // Export all models from this file to keep server.js clean
 
-import PlayerModel from './Player';
-import MatchModel from './Match';
+let PlayerModel = require('./Player');
+let MatchModel = require('./Match');
 
-export default {
+module.exports = {
     PlayerModel,
     MatchModel
 };

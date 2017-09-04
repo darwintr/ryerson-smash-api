@@ -5,8 +5,7 @@
   "main": "./dist/server.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "./node_modules/.bin/babel  ./src --experimental --source-maps-inline -d ./dist",
-    "start": "./node_modules/.bin/babel  ./src --experimental --source-maps-inline -d ./dist && nodemon ./dist/server.js"
+    "start": "nodemon ./src/server.js"
   },
   "author": "darwin",
   "license": "ISC",
@@ -18,8 +17,6 @@
     "nodemon": "^1.11.0"
   },
   "devDependencies": {
-    "babel-cli": "^6.26.0",
-    "babel-preset-env": "^1.6.0",
     "nodemon": "^1.11.0"
   }
 }
