@@ -35,7 +35,7 @@ An API to track players and matchups for the Ryerson Smash Bros. Community
                wins: Number,
                losses: Number,
             },
-           ys: {
+            ys: {
                wins: Number,
                losses: Number,
             },
