@@ -9,15 +9,41 @@ let router = express.Router();
 let Player = db.model('Player', Models.PlayerModel);
 let Match = db.model('Match', Models.MatchModel);
 
-router.get('/', (req, res) => {
+const  matchQueryValidator = (query) => {
+    let queryObject = {};
+    if(query.players && query.players!==[]) {
+        queryObject.players = {};
+        queryObject.players.$all = [];
+    }
+    if (query.stage)
+        queryObject.stage = query.stage;
 
-    console.log('GET /match');
 
-    let queries = {};
-    if(req.query.id){
-        queries._id = parseInt(req.query.id);
+    for(let index in query.players){
+        if(!query.players[index]._playerID && !query.players[index].character)
+            return {};
+        let playerObject = {};
+        if(query.players[index].hasOwnProperty('_playerID'))
+            playerObject._playerID = query.players[index]._playerID;
+        if(query.players[index].hasOwnProperty('character'))
+            playerObject.character = query.players[index].character;
+        if(query.players[index].hasOwnProperty('winner')) {
+            playerObject.winner = query.players[index].winner;
+        }
+        console.log({"$elemMatch": playerObject});
+        queryObject.players.$all.push({"$elemMatch": playerObject});
     }
 
+    return queryObject;
+}
+
+router.post('/search', (req, res) => {
+
+    console.log('GET /match');
+    //body: queries
+    //queries: char1, char2, tag1, tag2, stage, winner
+    let queries = matchQueryValidator(req.body);
+    console.log(queries);
     Match.find(queries)
         .then((p, e) => {
             if(e){
@@ -26,12 +52,38 @@ router.get('/', (req, res) => {
                 if(p.length)
                     return res.status(200).send(p);
                 else
-                    return res.status(404).send("MatchID not found.");
+                    return res.status(404).send("Matches not found.");
             }
         })
         .catch((e) => {
             return res.status(500).send(e);
         });
+});
+
+router.get('/:id', (req, res) => {
+
+    console.log('GET /match/:id');
+
+    if (Number.isInteger(req.params.id)) {
+        Match.findById(req.params.id)
+            .then((p, e) => {
+                if(e){
+                    throw 'Database error';
+                } else{
+                    if(p.length)
+                        return res.status(200).send(p);
+                    else
+                        return res.status(404).send("MatchID not found.");
+                }
+            })
+            .catch((e) => {
+                return res.status(500).send(e);
+            });
+    }else{
+        return res.status(400).send('Bad Request');
+    }
+
+
 });
 
 router.post('/', (req, res) => {
