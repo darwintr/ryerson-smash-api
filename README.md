@@ -5,8 +5,6 @@ An API to track players and matchups for the Ryerson Smash Bros. Community
 
 * [Player](#player)
 * [Match](#match)
-* [Stats](stats)
-
 
 ### Player
 
