@@ -22,6 +22,7 @@ const playerSchema = new Schema({
         required: true,
         lowercase: true
     },
+    rating: { type: Number, default: 1200},
     secondary: {
         type: String,
         validate: {

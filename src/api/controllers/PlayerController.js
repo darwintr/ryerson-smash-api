@@ -8,9 +8,6 @@ router.use(bodyParser.urlencoded( { extended: true } ));
 router.use(bodyParser.json());
 let Player = db.model('Player', Models.PlayerModel);
 
-// TODO: Move exceptions to a separate file/implementation, fix the ugly exception implementation
-// TODO: Document this somewhere (probably in a md file)
-
 const handleErr = (e, res) => {
     switch (e) {
         case 'Player exists error':
@@ -41,8 +38,7 @@ const handleGet = (p, e, res) => {
         throw 'Database Error';
     } else {
         console.log(p);
-        res.status(200);
-        return res.send(p);
+        res.status(200).send(p);
     }
 };
 
@@ -50,6 +46,8 @@ router.get('/', (req, res) => {
 
     // GET PLAYER by TAG/NAME, GET ALL IF NO PARAMS
     // PARAMS: tag and/or name
+
+    console.log('GET /player');
 
     Player.find(playerQueryBuilder(req.query.tag, req.query.name))
         .then((p, e) => handleGet(p, e, res))
@@ -62,6 +60,8 @@ router.get('/:id', (req, res) => {
 
     // GET PLAYER by ID
 
+    console.log('GET /player/:id');
+
     if (Number.isInteger(req.params.id)) {
         Player.findById(req.params.id)
             .then((p, e) => handleGet(p, e, res))
@@ -73,6 +73,8 @@ router.put('/', (req, res) => {
 
     // UPDATE A PLAYER INFO (name, tag, main)
     // PARAMS: tag and name
+
+    console.log('PUT /player');
 
     // handler for request; called after query
     const handleUpdate  = (p, e) => {
@@ -111,7 +113,8 @@ router.post('/', (req, res) => {
     // ADD A PLAYER
     // PARAMS: tag and/or name
 
-    console.log(req.body);
+    console.log('POST /player')
+
     let qName = req.body.name,
         qTag = req.body.tag,
         qMain = req.body.main;
@@ -136,6 +139,8 @@ router.post('/', (req, res) => {
 router.delete('/', (req, res) => {
     // DELETE A PLAYER
     // PARAMS: tag and name ; id else: res: 400 / res.message = "more than one player with that tag, get id"
+
+    console.log('DELETE /player')
 
     // handler for request; called after query
     const handleDelete = (p, e) => {

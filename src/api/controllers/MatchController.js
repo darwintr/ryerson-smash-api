@@ -2,6 +2,7 @@ let express = require('express');
 let Models = require('../models/ModelIndex');
 let db = require('../../db');
 let bodyParser = require('body-parser');
+let Rating = require('../lib/rating');
 
 let router = express.Router();
 
@@ -9,6 +10,9 @@ let Player = db.model('Player', Models.PlayerModel);
 let Match = db.model('Match', Models.MatchModel);
 
 router.get('/', (req, res) => {
+
+    console.log('GET /match');
+
     let queries = {};
     if(req.query.id){
         queries._id = parseInt(req.query.id);
@@ -32,7 +36,7 @@ router.get('/', (req, res) => {
 
 router.post('/', (req, res) => {
 
-    console.log('POST /match : ')
+    console.log('POST /match');
     console.log(req.body);
 
     if(!req.body.players || !req.body.stage){
@@ -42,9 +46,12 @@ router.post('/', (req, res) => {
     let pids = [];
     let winners = [];
     let losers = [];
+    let r = new Rating();
+    let ratingW, ratingL;
+
     for( let player in req.body.players){
         if (req.body.players.hasOwnProperty(player)) {
-            let p = req.body.players[player]
+            let p = req.body.players[player];
             console.log(p);
             pids.push(p._playerID);
             if (p.winner) {
@@ -59,17 +66,39 @@ router.post('/', (req, res) => {
     Player.find({_id: {$in: pids}})
         .then((p, e) => {
             return new Promise((resolve) => {
-                    console.log(p);
-                    if (e) {
-                        throw 'Database error';
-                    }
-                    if (p.length!==req.body.players.length) {
-                        console.log(p);
-                        throw 'Player does not exist error'
-                    }
-                    resolve();
+                console.log(p);
+                if (e) {
+                    throw 'Database error';
                 }
-            )
+                if (p.length !==req.body.players.length) {
+                    console.log(p);
+                    throw 'Player does not exist error'
+                }
+
+                // Rating only supports 1 vs. 1 for now.
+                // There's probably a better way to do this..
+                if (p.length === 2) {
+                    // Determine the winner/loser
+                    let w, l;
+                    if (winners.includes(p[0]._id)) {
+                        w = p[0];
+                        l = p[1];
+                    } else {
+                        l = p[0];
+                        w = p[1];
+                    }
+                    // Determine expected score
+                    w.expected = r.expected(w.rating, l.rating);
+                    l.expected = 1 - w.expected;
+                    // Calculate new rating
+                    ratingW = Math.round(r.calculateElo(w.rating, w.expected, 1));
+                    ratingL = Math.round(r.calculateElo(l.rating, l.expected, 0));
+
+                    console.log(ratingW, ratingL);
+                }
+
+                resolve();
+            })
         }).then(()=> {
             let newMatch =  new Match({
                 players: req.body.players,
@@ -87,10 +116,9 @@ router.post('/', (req, res) => {
                         res.status(400).send(err.message.replace(', ', '\n'));
                     });
 
-            // Update player wins/losses accordingly
-
             Player.updateMany({_id: {$in: winners} },
-                {$inc: {wins: 1, [`stages.${req.body.stage}.wins`]: 1}})
+                {$inc: {wins: 1, [`stages.${req.body.stage}.wins`]: 1},
+                 $set: {rating: ratingW}})
                 .then((p, e) => {
                     if (e) {
                         throw 'Database error'
@@ -100,7 +128,8 @@ router.post('/', (req, res) => {
                  });
 
             Player.updateMany({_id: {$in: losers} },
-                {$inc: {losses: 1, [`stages.${req.body.stage}.losses`]: 1}})
+                {$inc: {losses: 1, [`stages.${req.body.stage}.losses`]: 1},
+                 $set: {rating: ratingL}})
                 .then((p, e) => {
                     if (e) {
                         throw 'Database error'
@@ -124,6 +153,9 @@ router.put('/', (req, res) => {
 });
 
 router.delete('/', (req, res) => {
+
+    console.log('DELETE /match')
+
     if(!req.query.id){
         return res.status(400).send("Bad Request");
     }
