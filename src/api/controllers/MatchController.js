@@ -9,6 +9,8 @@ let router = express.Router();
 let Player = db.model('Player', Models.PlayerModel);
 let Match = db.model('Match', Models.MatchModel);
 
+
+
 const  matchQueryValidator = (query) => {
     let queryObject = {};
     if(query.players && query.players!==[]) {
@@ -39,20 +41,20 @@ const  matchQueryValidator = (query) => {
 
 router.post('/search', (req, res) => {
 
-    console.log('GET /match');
-    //body: queries
-    //queries: char1, char2, tag1, tag2, stage, winner
+    console.log('GET /match/search');
     let queries = matchQueryValidator(req.body);
     console.log(queries);
-    Match.find(queries)
+    Match.find(queries).populate('players._playerID')
         .then((p, e) => {
             if(e){
                 throw 'Database error';
             } else{
-                if(p.length)
+                if(p.length) {
+                    console.log(p);
                     return res.status(200).send(p);
+                }
                 else
-                    return res.status(404).send("Matches not found.");
+                    return res.status(204).send("Matches not found.");
             }
         })
         .catch((e) => {
@@ -63,17 +65,20 @@ router.post('/search', (req, res) => {
 router.get('/:id', (req, res) => {
 
     console.log('GET /match/:id');
+    console.log(req.params.id);
 
-    if (Number.isInteger(req.params.id)) {
-        Match.findById(req.params.id)
+    if (Number.isInteger(parseInt(req.params.id))) {
+        Match.findById(req.params.id).populate('players._playerID')
             .then((p, e) => {
                 if(e){
                     throw 'Database error';
                 } else{
-                    if(p.length)
-                        return res.status(200).send(p);
+
+                    if(p!==null) {
+                        return res.status(200).send([p]);
+                    }
                     else
-                        return res.status(404).send("MatchID not found.");
+                        return res.status(204).send("MatchID not found.");
                 }
             })
             .catch((e) => {
@@ -161,7 +166,8 @@ router.post('/', (req, res) => {
                         if (e) {
                             throw 'error';
                         } else {
-                            res.status(200).send('Successfully added Match');
+                            res.status(200).send('Successfully added match.');
+
                         }
                     }).catch((err) => {
                         console.log(err);
@@ -191,24 +197,40 @@ router.post('/', (req, res) => {
                 });
 
         }).catch((err) => {
-            console.log(err);
             res.status(400).send(err);
         });
 
 
 });
 
-router.put('/', (req, res) => {
-    if(!req.body.players && !req.body.stage){
+router.put('/:id', (req, res) => {
+    if(!req.params.id){
         return res.status(400).send('Bad Request');
     }
+
+    Player.findOneAndUpdate({_id: parseInt(req.params.id)},
+        {$set: matchQueryValidator(req.body)})
+        .then((p, e) => {
+            if(e){
+                throw 'Database error';
+            } else{
+                if(p.length)
+                    return res.status(200).send(p);
+                else
+                    return res.status(204).send("Matches not found.");
+            }
+        })
+        .catch((e) => {
+            return res.status(500).send(e);
+        });
+
 });
 
-router.delete('/', (req, res) => {
+router.delete('/:id', (req, res) => {
 
     console.log('DELETE /match')
 
-    if(!req.query.id){
+    if(!req.params.id){
         return res.status(400).send("Bad Request");
     }
 
