@@ -176,12 +176,12 @@ router.post('/', (req, res) => {
                         if (e) {
                             throw 'error';
                         } else {
-                            res.status(200).send('Successfully added match.');
+                            return res.status(200).send('Successfully added match.');
 
                         }
                     }).catch((err) => {
                         console.log(err);
-                        res.status(400).send(err.message.replace(', ', '\n'));
+                        return res.status(400).send(err.message.replace(', ', '\n'));
                 });
 
                 Player.updateMany({_id: {$in: winners} },
@@ -207,9 +207,8 @@ router.post('/', (req, res) => {
                     });
 
             }).catch((err) => {
-                res.status(400).send(err);
+                return res.status(400).send(err);
             });
-
         }).catch((err) => {
             return res.status(400).send(err);
     });

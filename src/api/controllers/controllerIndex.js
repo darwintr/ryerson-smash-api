@@ -2,8 +2,10 @@
 
 let PlayerController = require('./PlayerController');
 let MatchController =require('./MatchController');
+let SetController = require('./SetController');
 
 module.exports = {
     PlayerController,
-    MatchController
+    MatchController,
+    SetController
 };
