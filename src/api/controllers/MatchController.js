@@ -119,49 +119,59 @@ router.post('/', (req, res) => {
         }
 
     }
-
-    Player.find({_id: {$in: pids}})
+    let newMatch =  new Match({
+        players: req.body.players,
+        stage: req.body.stage
+    });
+    newMatch.validate()
         .then((p, e) => {
-            return new Promise((resolve) => {
-                console.log(p);
-                if (e) {
-                    throw 'Database error';
-                }
-                if (p.length !==req.body.players.length) {
-                    console.log(p);
-                    throw 'Player does not exist error'
-                }
+            if(e) {
+                throw 'Invalid match error'
+            }
+        })
+        .then(() =>{
+            Player.find({_id: {$in: pids}})
+                .then((p, e) => {
+                    return new Promise((resolve) => {
+                        console.log(p);
+                        if (e) {
+                            throw 'Database error';
+                        }
+                        if (p.length !==req.body.players.length) {
+                            console.log(p);
+                            throw 'Player does not exist error'
+                        }
 
-                // Rating only supports 1 vs. 1 for now.
-                // There's probably a better way to do this..
-                if (p.length === 2) {
-                    // Determine the winner/loser
-                    let w, l;
-                    if (winners.includes(p[0]._id)) {
-                        w = p[0];
-                        l = p[1];
-                    } else {
-                        l = p[0];
-                        w = p[1];
-                    }
-                    // Determine expected score
-                    w.expected = r.expected(w.rating, l.rating);
-                    l.expected = 1 - w.expected;
-                    // Calculate new rating
-                    ratingW = Math.round(r.calculateElo(w.rating, w.expected, 1));
-                    ratingL = Math.round(r.calculateElo(l.rating, l.expected, 0));
+                        // Rating only supports 1 vs. 1 for now.
+                        // There's probably a better way to do this..
+                        if (p.length === 2) {
+                            // Determine the winner/loser
+                            let w, l;
+                            if (winners.includes(p[0]._id)) {
+                                w = p[0];
+                                l = p[1];
+                            } else {
+                                l = p[0];
+                                w = p[1];
+                            }
+                            // Determine expected score
+                            w.expected = r.expected(w.rating, l.rating);
+                            l.expected = 1 - w.expected;
+                            // Calculate new rating
+                            ratingW = Math.round(r.calculateElo(w.rating, w.expected, 1));
+                            ratingL = Math.round(r.calculateElo(l.rating, l.expected, 0));
 
-                    console.log(ratingW, ratingL);
-                }
+                            console.log(ratingW, ratingL);
+                        }
 
-                resolve();
-            })
-        }).then(()=> {
-            let newMatch =  new Match({
-                players: req.body.players,
-                stage: req.body.stage
-            });
-            newMatch.save()
+                        resolve();
+                    })
+                }).then(()=> {
+                let newMatch =  new Match({
+                    players: req.body.players,
+                    stage: req.body.stage
+                });
+                newMatch.save()
                     .then((p, e) => {
                         if (e) {
                             throw 'error';
@@ -172,34 +182,37 @@ router.post('/', (req, res) => {
                     }).catch((err) => {
                         console.log(err);
                         res.status(400).send(err.message.replace(', ', '\n'));
-                    });
-
-            Player.updateMany({_id: {$in: winners} },
-                {$inc: {wins: 1, [`stages.${req.body.stage}.wins`]: 1},
-                 $set: {rating: ratingW}})
-                .then((p, e) => {
-                    if (e) {
-                        throw 'Database error'
-                    } else {
-                        console.log('Successfully updated wins')
-                    }
-                 });
-
-            Player.updateMany({_id: {$in: losers} },
-                {$inc: {losses: 1, [`stages.${req.body.stage}.losses`]: 1},
-                 $set: {rating: ratingL}})
-                .then((p, e) => {
-                    if (e) {
-                        throw 'Database error'
-                    } else {
-                        console.log('Successfully updated losses')
-                    }
                 });
 
-        }).catch((err) => {
-            res.status(400).send(err);
-        });
+                Player.updateMany({_id: {$in: winners} },
+                    {$inc: {wins: 1, [`stages.${req.body.stage}.wins`]: 1},
+                        $set: {rating: ratingW}})
+                    .then((p, e) => {
+                        if (e) {
+                            throw 'Database error'
+                        } else {
+                            console.log('Successfully updated wins')
+                        }
+                    });
 
+                Player.updateMany({_id: {$in: losers} },
+                    {$inc: {losses: 1, [`stages.${req.body.stage}.losses`]: 1},
+                        $set: {rating: ratingL}})
+                    .then((p, e) => {
+                        if (e) {
+                            throw 'Database error'
+                        } else {
+                            console.log('Successfully updated losses')
+                        }
+                    });
+
+            }).catch((err) => {
+                res.status(400).send(err);
+            });
+
+        }).catch((err) => {
+            return res.status(400).send(err);
+    });
 
 });
 
@@ -217,7 +230,7 @@ router.put('/:id', (req, res) => {
                 if(p.length)
                     return res.status(200).send(p);
                 else
-                    return res.status(204).send("Matches not found.");
+                    return res.status(204).send("Match not found.");
             }
         })
         .catch((e) => {
@@ -242,6 +255,15 @@ router.delete('/:id', (req, res) => {
                 res.status(200).send("Match deleted");
             }
         });
+});
+
+router.delete('/', (req, res) => {
+    if(req.query.confirmation){
+        Match.remove({})
+            .then((p, e) => {
+                res.status(200).send('All deleted');
+            });
+    }
 });
 
 module.exports = router;

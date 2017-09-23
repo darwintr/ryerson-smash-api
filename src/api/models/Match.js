@@ -1,17 +1,16 @@
 let mongoose = require('mongoose');
 let db = require('../../db');
-let charas =  require('./../constants/Characters');
-let stages = require('./../constants/Stages');
+let CHARACTERS =  require('./../constants/Characters');
+let STAGES = require('./../constants/Stages');
 
 const Schema = mongoose.Schema;
-const stageArray = [];
-for(let stage in stages.STAGES){
-    stageArray.push(stage);
-}
-const charaArray = [];
 
-for(let char in charas.CHARACTERS){
-    charaArray.push(char);
+function validateCharacter(c){
+    return Object.keys(CHARACTERS).includes(c);
+}
+
+function validateStage(c){
+    return Object.keys(STAGES).includes(c);
 }
 
 function minArray(val){
@@ -34,14 +33,14 @@ const participantSchema = new Schema({
     //tag : {type: String, required: [true, "Need a player Tag"]},
     //name : {type : String, required: [true, "Need player name"]},
     _playerID: {type: Number, ref: 'Player', required: [true, "need a player ID"]},
-    character: {type: String, enum: charaArray, required: [true, "Need a character"]},
+    character: {type: String, validate: validateCharacter, required: [true, "Need a character"]},
     winner: {type: Boolean, required: [true, 'Need whether they won or not.']}
 }, {_id: false});
 
 const matchSchema = new Schema({
     _id: { type: Schema.Types.ObjectId, ref: 'MatchID' },
     players: {type : [participantSchema], required: [true, "Need players"], validate: minArray},
-    stage: {type: String, enum: stageArray, required: [true, "Need a stage."]}
+    stage: {type: String, validate: validateStage , required: [true, "Need a stage."]}
 
 });
 
